@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio de Física</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#fff8e7;--card:#fff;--ink:#1d2a4d;--mut:#5b6785;--line:#1d2a4d;--c1:#ff6b6b;--c2:#ffb300;--c3:#2ec4b6;--c4:#4d8bff;--c5:#9b5de5;--ok:#1fa971;--bad:#e5484d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a33;--card:#1c2749;--ink:#f3f1ff;--mut:#aab4d6;--line:#f3f1ff}}
+:root[data-theme="dark"]{--bg:#121a33;--card:#1c2749;--ink:#f3f1ff;--mut:#aab4d6;--line:#f3f1ff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Fredoka',system-ui,sans-serif;font-size:18px;line-height:1.5}
+main{max-width:760px;margin:0 auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:30px;margin:6px 0;line-height:1.1}
+.xp{background:var(--c2);color:#1d2a4d;border:3px solid var(--line);border-radius:999px;padding:4px 16px;font-weight:700;box-shadow:3px 3px 0 var(--line)}
+nav{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 14px}
+nav button{flex:none;font:inherit;font-weight:600;color:#1d2a4d;border:3px solid var(--line);border-radius:14px;padding:8px 12px;cursor:pointer;box-shadow:3px 3px 0 var(--line)}
+nav button[aria-selected=true]{transform:translate(3px,3px);box-shadow:none;outline:3px solid var(--ink);outline-offset:2px}
+.card{background:var(--card);border:3px solid var(--line);border-radius:20px;padding:18px;box-shadow:6px 6px 0 var(--accent,var(--line))}
+.tip{background:color-mix(in srgb,var(--accent) 22%,transparent);border-left:8px solid var(--accent);border-radius:10px;padding:10px 14px;margin:0 0 16px}
+h2{margin:0 0 8px;font-size:24px}h3{font-size:21px;margin:8px 0 12px}
+.opts{display:grid;gap:10px}
+.opt,.btn{font:inherit;font-weight:600;text-align:left;color:var(--ink);background:var(--card);border:3px solid var(--line);border-radius:14px;padding:10px 14px;cursor:pointer;min-height:48px}
+.opt:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 25%,var(--card))}
+.btn{background:var(--accent);color:#1d2a4d;text-align:center;box-shadow:3px 3px 0 var(--line)}
+.good{background:var(--ok)!important;color:#fff}.bad{background:var(--bad)!important;color:#fff}
+.fb{margin-top:12px;font-weight:600}.fb .btn{margin-top:8px;display:block}
+.prog,.mut{color:var(--mut);font-size:15px;margin:0}
+.big{font-size:28px;text-align:center;margin:12px 0}
+input[type=text]{font:inherit;width:100%;padding:10px;border:3px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);margin:6px 0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tiles{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.tile{font:inherit;font-weight:600;color:var(--ink);background:var(--card);border:3px solid var(--line);border-radius:14px;padding:10px 14px;cursor:pointer;flex:1 1 140px}
+.tile.used{opacity:.4}
+.slots{display:grid;gap:8px;margin:10px 0}
+.slot{border:3px dashed var(--line);border-radius:14px;padding:10px;min-height:48px}
+.slot.f{border-style:solid;background:var(--ok);color:#fff;font-weight:600}
+.track{position:relative;height:70px;background:linear-gradient(var(--c3),var(--c3)) bottom/100% 10px no-repeat,color-mix(in srgb,var(--c4) 25%,var(--card));border:3px solid var(--line);border-radius:14px;overflow:hidden;margin:10px 0}
+.car{position:absolute;bottom:8px;left:0;font-size:38px;line-height:1}
+label{display:block;font-weight:600;margin-top:6px}input[type=range]{width:100%;accent-color:var(--c4)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stats div{background:color-mix(in srgb,var(--accent) 20%,var(--card));border:3px solid var(--line);border-radius:12px;padding:6px}
+.stats b{display:block;font-size:22px}
+hr{border:0;border-top:3px dashed var(--line);margin:20px 0 14px}
+button:focus-visible,input:focus-visible{outline:4px solid var(--c5);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><main>
+<header><h1>🔬 Laboratorio de Física</h1><div class="xp">⭐ <span id="xp">0</span> puntos</div></header>
+<p class="mut">Ciencias II, énfasis en Física. Juega, practica y gana puntos.</p>
+<nav id="nav" role="tablist"></nav>
+<section class="card" id="stage"></section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+let xp=0;const add=n=>{xp+=n;$('#xp').textContent=xp};
+const shuf=a=>[...a].sort(()=>Math.random()-.5);
+const TABS=[
+['📏 Unidades','--c1'],['🧪 Método','--c2'],['🔄 Despejes','--c3'],['🔁 Conversiones','--c4'],['🏎️ Movimiento','--c5']];
+const nav=$('#nav');
+TABS.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t[0];b.style.background=`var(${t[1]})`;b.setAttribute('role','tab');b.onclick=()=>show(i);nav.append(b)});
+
+function mcq(el,items,pts){let i=0,ok=0;const list=shuf(items);
+ (function draw(){
+  if(i>=list.length){el.innerHTML=`<div class="big">🏆 ${ok} de ${list.length} aciertos</div><button class="btn" id="again">Jugar otra vez</button>`;el.querySelector('#again').onclick=()=>mcq(el,items,pts);return}
+  const [q,o,c,e]=list[i];const idx=shuf(o.map((_,k)=>k));
+  el.innerHTML=`<p class="prog">Pregunta ${i+1} de ${list.length}</p><h3>${q}</h3><div class="opts">${idx.map(k=>`<button class="opt" data-k="${k}">${o[k]}</button>`).join('')}</div><div class="fb"></div>`;
+  el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+   const k=+b.dataset.k,fb=el.querySelector('.fb');
+   el.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.k===c)x.classList.add('good')});
+   if(k===c){ok++;add(pts);fb.textContent='✅ ¡Correcto! +'+pts+'. '+e}else{b.classList.add('bad');fb.textContent='❌ Casi. '+e}
+   const n=document.createElement('button');n.className='btn';n.textContent=i+1<list.length?'Siguiente':'Ver resultado';n.onclick=()=>{i++;draw()};fb.append(n)});
+ })()}
+
+function num(el,items,pts){let i=0,ok=0;
+ (function draw(){
+  if(i>=items.length){el.innerHTML=`<div class="big">🏆 ${ok} de ${items.length} retos resueltos</div><button class="btn" id="again">Repetir retos</button>`;el.querySelector('#again').onclick=()=>num(el,items,pts);return}
+  const [q,ans,unit,hint,sol]=items[i];let tries=0;
+  el.innerHTML=`<p class="prog">Reto ${i+1} de ${items.length}</p><h3>${q}</h3><div class="tip">💡 ${hint}</div><div class="row"><input type="text" inputmode="decimal" aria-label="Tu respuesta" placeholder="Tu respuesta en ${unit}"></div><button class="btn" style="margin-top:6px">Comprobar</button><div class="fb"></div>`;
+  const inp=el.querySelector('input'),fb=el.querySelector('.fb');
+  el.querySelector('.btn').onclick=()=>{
+   const v=parseFloat(inp.value.replace(/\s/g,'').replace(',','.'));
+   const next=()=>{const n=document.createElement('button');n.className='btn';n.textContent='Siguiente';n.onclick=()=>{i++;draw()};fb.append(n)};
+   if(isNaN(v)){fb.textContent='Escribe un número.';return}
+   if(Math.abs(v-ans)/Math.abs(ans)<=0.02){ok++;add(pts);fb.textContent='✅ ¡Excelente! +'+pts+' puntos. '+sol;next()}
+   else{tries++;if(tries>=2){fb.textContent='La respuesta es '+ans+' '+unit+'. '+sol;next()}else fb.textContent='🤔 Todavía no. Revisa la pista e inténtalo otra vez.'}};
+ })()}
+
+const UN=[
+['¿Cómo se llama el proceso de comparar una magnitud con un patrón estándar?',['Contar','Medir','Estandarizar','Ordenar'],1,'Medir es comparar con un patrón.'],
+['¿Cuál es la unidad de longitud en el Sistema Internacional?',['Kilómetro','Pie','Metro','Milla'],2,'El metro (m).'],
+['¿Cuál es la unidad de masa en el Sistema Internacional?',['Gramo','Kilogramo','Libra','Tonelada'],1,'El kilogramo (kg).'],
+['¿Cuál es la unidad de temperatura en el Sistema Internacional?',['Celsius','Fahrenheit','Kelvin','Grado'],2,'El Kelvin (K).'],
+['¿Qué significan las letras del sistema MKS?',['Metro, Kilogramo, Segundo','Milla, Kilo, Segundo','Metro, Kelvin, Siglo','Masa, Kilo, Sol'],0,'Son las tres unidades base: m, kg y s.'],
+['¿Qué sistema de unidades usa la mayoría de los países y es decimal?',['Sistema Imperial','Sistema Métrico Decimal','Sistema Americano','Sistema de los Faraones'],1,'Es el sistema métrico decimal, y el SI es su versión moderna.'],
+['El camino que sigue un cuerpo al moverse se llama…',['Trayectoria','Desplazamiento','Rapidez','Aceleración'],0,'La trayectoria es el camino recorrido.'],
+['La línea recta entre el punto inicial y el final es el…',['Trayectoria','Tiempo','Desplazamiento','Patrón'],2,'Desplazamiento: va en línea recta del inicio al final.'],
+['¿Cuál es la unidad de rapidez en el SI?',['km/h','m/s','m/s²','cm'],1,'Metros por segundo (m/s). La aceleración usa m/s².'],
+['¿Qué rama de la Física estudia el movimiento sin ver sus causas?',['Óptica','Acústica','Cinemática','Termología'],2,'La cinemática estudia el movimiento.']];
+
+const MET=[['Observación','Miras un fenómeno y te haces preguntas.'],['Hipótesis','Propones una respuesta que se puede probar.'],['Experimentación','Pruebas tu hipótesis con un experimento.'],['Conclusión','Decides si tu hipótesis era correcta.']];
+function metodo(el){let step=0;
+ el.innerHTML=`<h3>Ordena los pasos: toca las tarjetas en el orden correcto</h3><div class="slots">${MET.map(()=>'<div class="slot"></div>').join('')}</div><div class="tiles"></div><div class="fb"></div>`;
+ const slots=el.querySelectorAll('.slot'),fb=el.querySelector('.fb');
+ shuf(MET).forEach(m=>{const b=document.createElement('button');b.className='tile';b.textContent=m[0];b.style.borderColor='var(--line)';
+  b.onclick=()=>{if(m[0]===MET[step][0]){slots[step].textContent=(step+1)+'. '+m[0]+': '+m[1];slots[step].classList.add('f');b.disabled=true;b.classList.add('used');step++;add(5);
+    fb.textContent=step===4?'🎉 ¡Método científico completo! Ahora lo sabes.':'';
+    if(step===4){const r=document.createElement('button');r.className='btn';r.textContent='Jugar otra vez';r.onclick=()=>metodo(el);fb.append(r)}}
+   else{fb.textContent='❌ Ese paso todavía no. Piensa qué haces primero.'}};
+  el.querySelector('.tiles').append(b)});}
+
+const DES=[
+['Despeja R en: 1/R = 1/R₁ + 1/R₂',['R = R₁ + R₂','R = (R₁ · R₂) / (R₁ + R₂)','R = 1/R₁ + 1/R₂','R = (R₁ + R₂) / (R₁ · R₂)'],1,'Suma las fracciones: (R₂+R₁)/(R₁R₂). Luego voltea los dos lados.'],
+['Despeja r en: V = ⅓ · π · r² · h',['r = 3V / (π·h)','r = √( 3V / (π·h) )','r = √( V / (3·π·h) )','r = √( 3V · π · h )'],1,'Multiplica por 3, divide entre π·h y al final saca raíz cuadrada.'],
+['Despeja I en: Q = I² · R · T',['I = Q / (R·T)','I = √( Q · R · T )','I = √( Q / (R·T) )','I = ( Q / (R·T) )²'],2,'Pasa R·T dividiendo y la potencia 2 pasa como raíz.']];
+
+const CON=[
+['Convierte 5 m² a cm²',50000,'cm²','Si 1 m = 100 cm, entonces 1 m² = 100 × 100 = 10 000 cm².','5 × 10 000 = 50 000 cm².'],
+['Convierte 40 L/min a m³/s',6.667e-4,'m³/s','1 L = 0.001 m³ y 1 min = 60 s. Escribe 0.000667 (o 6.667e-4).','40 × 0.001 ÷ 60 = 0.000667 m³/s.'],
+['Convierte 96 500 cm³/min a gal/s',0.4249,'gal/s','1 gal = 3 785.41 cm³ y 1 min = 60 s. Divide entre ambos.','96 500 ÷ 3 785.41 ÷ 60 = 0.425 gal/s.'],
+['Convierte 0.94 gal/s a cm³/h',12809808,'cm³/h','Multiplica por 3 785.41 cm³ por galón y por 3 600 s en una hora.','0.94 × 3 785.41 × 3 600 ≈ 12 809 808 cm³/h.']];
+
+const MOV=[
+['Un auto va a 90 km/h. ¿Cuántos m/s son?',25,'m/s','Divide entre 3.6 (1000 m ÷ 3600 s).','90 ÷ 3.6 = 25 m/s.'],
+['Auto parte del reposo, a = 5 m/s². ¿Qué velocidad tiene a los 11 s? (v = a · t)',55,'m/s','Con v₀ = 0: v = a · t.','5 × 11 = 55 m/s.'],
+['Mismo auto (a = 5 m/s²). ¿Qué distancia recorre en 5 s? (d = ½ · a · t²)',62.5,'m','t² = 25. Luego multiplica por ½ y por a.','½ × 5 × 25 = 62.5 m.'],
+['Un móvil parte del reposo con a = 20 m/s². ¿Qué velocidad tiene a los 15 s?',300,'m/s','v = a · t.','20 × 15 = 300 m/s.'],
+['Mismo móvil: ¿qué espacio recorre en 15 s?',2250,'m','d = ½ · a · t².','½ × 20 × 225 = 2 250 m.'],
+['Un avión vuela a 1 225 km/h durante 12.5 h. ¿Qué distancia recorre? (d = v · t)',15312.5,'km','Rapidez por tiempo.','1 225 × 12.5 = 15 312.5 km.'],
+['La luz va a 300 000 km/s y tarda 8 min 19 s (499 s) en llegar a la Tierra. ¿Distancia al Sol?',149700000,'km','d = v · t, con el tiempo en segundos.','300 000 × 499 = 149 700 000 km.'],
+['Una nave va a 40 300 km/h. Debe recorrer 9 461 000 000 000 km. ¿Cuántos años tarda? (1 año = 8 760 h)',26800,'años','Primero t = d ÷ v en horas, luego divide entre 8 760.','9.461×10¹² ÷ 40 300 = 234 764 268 h ≈ 26 800 años.']];
+
+function sim(el){
+ el.innerHTML=`<h3>🏎️ Simulador de aceleración</h3><div class="track"><div class="car" id="car">🏎️</div></div>
+ <label>Aceleración: <b id="av">5</b> m/s²<input type="range" id="a" min="1" max="10" value="5"></label>
+ <label>Tiempo: <b id="tv">8</b> s<input type="range" id="t" min="1" max="15" value="8"></label>
+ <div class="stats" style="margin:12px 0"><div>Tiempo<b id="st">0 s</b></div><div>Velocidad<b id="sv">0 m/s</b></div><div>Distancia<b id="sd">0 m</b></div></div>
+ <button class="btn" id="go">¡Arrancar!</button>`;
+ const g=i=>el.querySelector(i);let raf;
+ const upd=()=>{g('#av').textContent=g('#a').value;g('#tv').textContent=g('#t').value};
+ g('#a').oninput=g('#t').oninput=upd;
+ g('#go').onclick=()=>{cancelAnimationFrame(raf);const a=+g('#a').value,T=+g('#t').value,t0=performance.now(),dur=T*350;
+  const step=now=>{const p=Math.min((now-t0)/dur,1),t=p*T;
+   g('#car').style.left=`calc(${(p*p)*100}% - ${(p*p)*44}px)`;
+   g('#st').textContent=t.toFixed(1)+' s';g('#sv').textContent=(a*t).toFixed(1)+' m/s';g('#sd').textContent=(.5*a*t*t).toFixed(1)+' m';
+   if(p<1)raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)};}
+
+function show(i){
+ [...nav.children].forEach((b,k)=>b.setAttribute('aria-selected',k===i));
+ const st=$('#stage');st.style.setProperty('--accent',`var(${TABS[i][1]})`);
+ st.innerHTML='<h2></h2><div class="tip"></div><div id="g"></div>';
+ const h=st.querySelector('h2'),tip=st.querySelector('.tip'),g=st.querySelector('#g');
+ h.textContent=TABS[i][0];
+ if(i===0){tip.textContent='Medir es comparar con un patrón. El Sistema Internacional (SI) usa metro, kilogramo y segundo.';mcq(g,UN,10)}
+ if(i===1){tip.textContent='Para investigar un fenómeno sigue siempre el mismo camino: Observación, Hipótesis, Experimentación y Conclusión.';metodo(g)}
+ if(i===2){tip.textContent='Despejar es dejar sola la letra que buscas. Lo que multiplica pasa dividiendo; la potencia 2 pasa como raíz.';mcq(g,DES,15)}
+ if(i===3){tip.textContent='Para convertir multiplica por fracciones que valen 1, por ejemplo (100 cm / 1 m). Para unidades al cuadrado, eleva el factor al cuadrado.';num(g,CON,20)}
+ if(i===4){tip.textContent='MRU: d = v · t. MRUA desde el reposo: v = a · t y d = ½ · a · t². Prueba el simulador y luego resuelve los retos.';sim(g);g.append(document.createElement('hr'));const r=document.createElement('div');g.append(r);num(r,MOV,20)}
+}
+show(0);
+</script></body></html>
